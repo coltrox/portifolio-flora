@@ -89,6 +89,81 @@
     reels.forEach(function (v) { rio.observe(v); });
   }
 
+  /* --- Lightbox: clique na imagem para ampliar ----------- */
+  var lb      = document.getElementById('lightbox');
+  var lbImg   = document.getElementById('lightboxImg');
+  var lbCap   = document.getElementById('lightboxCap');
+  var figuras = [].slice.call(document.querySelectorAll('[data-galeria] figure'));
+  var atual   = 0;
+  var voltarPara = null;
+
+  // Cada figura vira alvo de clique e de teclado
+  figuras.forEach(function (fig, i) {
+    fig.setAttribute('role', 'button');
+    fig.setAttribute('tabindex', '0');
+    var img = fig.querySelector('img');
+    fig.setAttribute('aria-label', 'Ampliar imagem: ' + (img ? img.alt : ''));
+    fig.addEventListener('click', function () { abrir(i); });
+    fig.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(i); }
+    });
+  });
+
+  function mostrar(i) {
+    atual = (i + figuras.length) % figuras.length;
+    var img = figuras[atual].querySelector('img');
+    if (!img) return;
+    lbImg.src = img.currentSrc || img.src;
+    lbImg.alt = img.alt || '';
+    lbCap.textContent = img.alt || '';
+  }
+
+  function abrir(i) {
+    if (!lb) return;
+    voltarPara = figuras[i];
+    mostrar(i);
+    lb.hidden = false;
+    requestAnimationFrame(function () { lb.classList.add('is-open'); });
+    document.body.classList.add('lightbox-open');
+    lb.querySelector('.lightbox__close').focus();
+  }
+
+  function fechar() {
+    lb.classList.remove('is-open');
+    document.body.classList.remove('lightbox-open');
+    var esconder = function () { lb.hidden = true; lbImg.src = ''; };
+    if (reduced) esconder(); else setTimeout(esconder, 250);
+    if (voltarPara) voltarPara.focus();
+  }
+
+  if (lb) {
+    lb.querySelector('.lightbox__close').addEventListener('click', fechar);
+    lb.querySelector('.lightbox__nav--prev').addEventListener('click', function () { mostrar(atual - 1); });
+    lb.querySelector('.lightbox__nav--next').addEventListener('click', function () { mostrar(atual + 1); });
+
+    // Clicar no fundo fecha; clicar na imagem, não
+    lb.addEventListener('click', function (e) {
+      if (e.target === lb || e.target.classList.contains('lightbox__frame')) fechar();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (lb.hidden) return;
+      if (e.key === 'Escape')     fechar();
+      if (e.key === 'ArrowLeft')  mostrar(atual - 1);
+      if (e.key === 'ArrowRight') mostrar(atual + 1);
+    });
+
+    // Arrastar para o lado no celular
+    var x0 = null;
+    lb.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend', function (e) {
+      if (x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) mostrar(atual + (dx < 0 ? 1 : -1));
+      x0 = null;
+    }, { passive: true });
+  }
+
   /* --- Ano em algarismos romanos no rodapé --------------- */
   var roman = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],
                [50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];

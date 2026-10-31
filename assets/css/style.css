@@ -10,8 +10,8 @@
   --brick:     #AD2831;   /* Brown Red      — superfícies    */
   --pink:      #FD9BB7;   /* Cotton Candy   — destaques      */
   --cream:     #F3E6BD;   /* Pearl Beige                     */
-  --paper:     #F3E6BD;   /* Pearl Beige    — fundo da página*/
-  --surface:   #FFFAF0;   /* off-white      — cartões        */
+  --paper:     #FDFAF3;   /* off-white      — fundo da página*/
+  --surface:   #F3E6BD;   /* Pearl Beige    — cartões        */
   --mustard:   #D8973C;   /* Golden Apricot — acento         */
   --ink:       #2E0A0E;   /* texto corrido                   */
   --muted:     #6E5048;   /* texto secundário                */
@@ -30,6 +30,10 @@
 }
 
 *,*::before,*::after{ box-sizing:border-box; }
+
+/* O atributo hidden precisa vencer qualquer display declarado depois.
+   Sem isto, overlays com display:flex seguem na tela engolindo cliques. */
+[hidden]{ display:none !important; }
 
 html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
 
@@ -330,10 +334,11 @@ body.menu-open{ overflow:hidden; }
 .work__media{
   display:grid; gap:clamp(.6rem,1.6vw,1rem);
   grid-template-columns:repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  align-items:start;
 }
-.work__media figure{ margin:0; overflow:hidden; border-radius:var(--radius); background:var(--surface); }
+.work__media figure{ margin:0; overflow:hidden; border-radius:var(--radius); background:var(--cream); }
 .work__media img{
-  width:100%; aspect-ratio:4/5; object-fit:cover;
+  width:100%; height:auto;
   transition:transform .6s cubic-bezier(.2,.8,.2,1);
 }
 .work__media figure:hover img{ transform:scale(1.04); }
@@ -353,7 +358,7 @@ body.menu-open{ overflow:hidden; }
   overflow:hidden;
 }
 .case__step{
-  background:var(--surface);
+  background:var(--paper);
   padding:clamp(1.25rem,3.5vw,2rem);
   display:grid; gap:.5rem; align-content:start;
 }
@@ -428,7 +433,7 @@ body.menu-open{ overflow:hidden; }
   overflow:hidden;
 }
 .segs li{
-  background:var(--surface);
+  background:var(--paper);
   padding:clamp(1.1rem,3.2vw,1.75rem);
   display:flex; align-items:baseline; gap:1rem;
   font-size:clamp(1rem,.95rem + .4vw,1.25rem);
@@ -580,3 +585,65 @@ body.menu-open{ overflow:hidden; }
   background:var(--cream);
 }
 .reels__note{ margin:.75rem 0 0; }
+
+/* =========================  LIGHTBOX  ====================== */
+
+/* Imagens de trabalho são clicáveis */
+.work__media figure{ cursor:zoom-in; position:relative; }
+.work__media figure:focus-visible{ outline:2px solid var(--wine); outline-offset:3px; }
+
+.lightbox{
+  position:fixed; inset:0; z-index:200;
+  display:flex; align-items:center; justify-content:center;
+  gap:clamp(.25rem,2vw,1.5rem);
+  padding:clamp(3.5rem,8vw,4.5rem) clamp(.5rem,3vw,2rem);
+  background:color-mix(in srgb, var(--wine) 94%, #000);
+  opacity:0; transition:opacity .25s ease;
+}
+.lightbox.is-open{ opacity:1; }
+
+.lightbox__frame{
+  margin:0; display:flex; flex-direction:column; align-items:center;
+  gap:.9rem; max-width:100%; max-height:100%;
+}
+.lightbox__frame img{
+  max-width:100%; max-height:calc(100svh - 9rem);
+  width:auto; height:auto;
+  object-fit:contain;
+  border-radius:var(--radius);
+  background:var(--cream);
+}
+.lightbox__cap{ color:var(--pink); text-align:center; max-width:60ch; margin:0; }
+
+.lightbox__close,
+.lightbox__nav{
+  background:none; border:0; cursor:pointer;
+  color:var(--cream);
+  font-family:var(--sans); line-height:1;
+  padding:.35rem .7rem;
+  border-radius:999px;
+  transition:background .2s, transform .2s;
+  flex:none;
+}
+.lightbox__close:hover,
+.lightbox__nav:hover{ background:color-mix(in srgb, var(--cream) 16%, transparent); }
+
+.lightbox__close{
+  position:absolute; top:clamp(.75rem,2.5vw,1.5rem); right:clamp(.75rem,2.5vw,1.5rem);
+  font-size:2.1rem;
+}
+.lightbox__nav{ font-size:clamp(2.2rem,6vw,3.2rem); }
+.lightbox__nav:hover{ transform:scale(1.1); }
+
+body.lightbox-open{ overflow:hidden; }
+
+@media (max-width:620px){
+  .lightbox{ padding:4rem .5rem 1rem; }
+  .lightbox__nav{
+    position:absolute; bottom:1rem;
+    background:color-mix(in srgb, var(--cream) 14%, transparent);
+  }
+  .lightbox__nav--prev{ left:1.5rem; }
+  .lightbox__nav--next{ right:1.5rem; }
+  .lightbox__frame img{ max-height:calc(100svh - 11rem); }
+}

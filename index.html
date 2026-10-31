@@ -6,7 +6,7 @@
 <title>by flora studio — Flora Stenico | Social Media & Criadora de Conteúdo</title>
 <meta name="description" content="Flora Stenico — Social Media, Story Maker, Captação de Conteúdo e Tráfego Pago. Transformo ideias em conteúdo que conecta.">
 <meta name="author" content="Flora Stenico">
-<meta name="theme-color" content="#FFFAF3">
+<meta name="theme-color" content="#FDFAF3">
 
 <!-- Open Graph / compartilhamento no WhatsApp e Instagram -->
 <meta property="og:type" content="website">
@@ -62,6 +62,7 @@
     <a href="https://wa.me/5519982364295" target="_blank" rel="noopener">(19) 98236-4295</a>
   </div>
 </div>
+
 
 <main id="conteudo">
 
@@ -150,7 +151,7 @@
       <h3 class="work__client">Pede um Docinho</h3>
       <p class="work__role">Social Media para a confeitaria</p>
     </header>
-    <div class="work__media">
+    <div class="work__media" data-galeria>
       <figure><img src="assets/img/work-docinho-01.jpg" alt="Post da confeitaria Pede um Docinho: café do bom, bom humor e um docinho" loading="lazy" decoding="async"></figure>
       <figure><img src="assets/img/work-docinho-02.jpg" alt="Post da confeitaria Pede um Docinho: bolo de morango com selo Alto em Gostosura" loading="lazy" decoding="async"></figure>
       <figure><img src="assets/img/work-docinho-03.jpg" alt="Publicação no Instagram da confeitaria: bolo vulcão de cenoura com chocolate belga" loading="lazy" decoding="async"></figure>
@@ -185,7 +186,7 @@
       <h3 class="work__client">REMAX Clarity</h3>
       <p class="work__role">Analista de Marketing e Social Media</p>
     </header>
-    <div class="work__media">
+    <div class="work__media" data-galeria>
       <figure><img src="assets/img/work-remax-01.jpg" alt="Imóvel REMAX Clarity: área externa com piscina" loading="lazy" decoding="async"></figure>
       <figure><img src="assets/img/work-remax-02.jpg" alt="Imóvel REMAX Clarity: varanda com vista e teto de madeira" loading="lazy" decoding="async"></figure>
       <figure><img src="assets/img/work-remax-03.jpg" alt="Imóvel REMAX Clarity: sala de jantar iluminada" loading="lazy" decoding="async"></figure>
@@ -217,7 +218,7 @@
       <h3 class="work__client">Microlins</h3>
       <p class="work__role">Social Media e Design</p>
     </header>
-    <div class="work__media">
+    <div class="work__media" data-galeria>
       <figure><img src="assets/img/work-microlins-01.jpg" alt="Post da Microlins: campanha de desconto em curso de inglês" loading="lazy" decoding="async"></figure>
       <figure><img src="assets/img/work-microlins-02.jpg" alt="Post da Microlins: sorteio de Páscoa" loading="lazy" decoding="async"></figure>
       <figure><img src="assets/img/work-microlins-03.jpg" alt="Post da Microlins: campanha Teste Completamente" loading="lazy" decoding="async"></figure>
@@ -334,6 +335,17 @@
   <span class="mono">Flora Stenico · Social Media</span>
   <span class="mono">MMXXVI</span>
 </footer>
+
+<!-- ======================= LIGHTBOX ======================= -->
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lightbox__close" type="button" aria-label="Fechar">&times;</button>
+  <button class="lightbox__nav lightbox__nav--prev" type="button" aria-label="Imagem anterior">&#8249;</button>
+  <figure class="lightbox__frame">
+    <img id="lightboxImg" src="" alt="">
+    <figcaption class="lightbox__cap mono" id="lightboxCap"></figcaption>
+  </figure>
+  <button class="lightbox__nav lightbox__nav--next" type="button" aria-label="Próxima imagem">&#8250;</button>
+</div>
 
 <script src="assets/js/main.js" defer></script>
 </body>

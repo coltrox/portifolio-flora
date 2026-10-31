@@ -71,6 +71,24 @@
     });
   }
 
+  /* --- Reels: carrega e toca só quando aparecem ---------- */
+  var reels = document.querySelectorAll('.reel video');
+
+  if (reels.length && 'IntersectionObserver' in window) {
+    var rio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var v = entry.target;
+        if (entry.isIntersecting) {
+          if (!v.src && v.dataset.src) v.src = v.dataset.src;
+          if (!reduced) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
+        } else if (!v.paused) {
+          v.pause();
+        }
+      });
+    }, { threshold: 0.35 });
+    reels.forEach(function (v) { rio.observe(v); });
+  }
+
   /* --- Ano em algarismos romanos no rodapé --------------- */
   var roman = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],
                [50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];

@@ -5,17 +5,17 @@
    =========================================================== */
 
 :root{
-  /* Cores da marca */
-  --wine:      #8A0117;   /* vinho profundo — logo e títulos */
-  --brick:     #A31D2A;   /* vermelho tijolo — superfícies  */
-  --pink:      #FA9BB5;   /* rosa — destaques               */
-  --cream:     #F3E5BE;   /* creme manteiga                 */
-  --paper:     #F6E7D0;   /* bege do logo — fundo da página  */
-  --surface:   #FFFAF3;   /* off-white — cartões e painéis   */
-  --mustard:   #CF9746;   /* mostarda — acento              */
-  --ink:       #2B0A10;   /* texto corrido                  */
-  --muted:     #6F554C;   /* texto secundário               */
-  --rule:      #E0CBA6;   /* linhas divisórias              */
+  /* Cores da marca — paleta oficial by flora studio */
+  --wine:      #640D14;   /* Black Cherry   — títulos e logo */
+  --brick:     #AD2831;   /* Brown Red      — superfícies    */
+  --pink:      #FD9BB7;   /* Cotton Candy   — destaques      */
+  --cream:     #F3E6BD;   /* Pearl Beige                     */
+  --paper:     #F3E6BD;   /* Pearl Beige    — fundo da página*/
+  --surface:   #FFFAF0;   /* off-white      — cartões        */
+  --mustard:   #D8973C;   /* Golden Apricot — acento         */
+  --ink:       #2E0A0E;   /* texto corrido                   */
+  --muted:     #6E5048;   /* texto secundário                */
+  --rule:      #DFC9A0;   /* linhas divisórias               */
 
   /* Tipografia */
   --display: "Anton", "Arial Narrow", Impact, sans-serif;
@@ -300,6 +300,12 @@ body.menu-open{ overflow:hidden; }
 
 .sobre__text p{ max-width:52ch; color:var(--ink); }
 
+.sobre__art{
+  width:min(100%, 340px);
+  justify-self:center;
+  margin:clamp(.5rem,2vw,1rem) auto 0;
+}
+
 /* ========================  TRABALHOS  ====================== */
 
 .work{ margin-bottom:clamp(3.5rem,9vw,7rem); }
@@ -364,8 +370,8 @@ body.menu-open{ overflow:hidden; }
 .serv{ border-top:1px solid var(--rule); }
 .serv__item{
   display:grid; gap:.4rem;
-  grid-template-columns:auto 1fr;
-  grid-template-areas:"num title" ". desc";
+  grid-template-columns:auto auto 1fr;
+  grid-template-areas:"num ic title" ". . desc";
   column-gap:clamp(1rem,4vw,3rem);
   padding:clamp(1.5rem,4vw,2.5rem) 0;
   border-bottom:1px solid var(--rule);
@@ -373,6 +379,11 @@ body.menu-open{ overflow:hidden; }
 }
 .serv__item:hover{ padding-left:clamp(.5rem,1.5vw,1.25rem); }
 .serv__num{ grid-area:num; color:var(--wine); padding-top:.55rem; }
+.serv__ic{
+  grid-area:ic; align-self:center;
+  width:clamp(26px,5.5vw,42px); height:auto;
+  margin-right:clamp(.6rem,2vw,1.1rem);
+}
 .serv__item h3{
   grid-area:title;
   font-family:var(--display);
@@ -398,6 +409,7 @@ body.menu-open{ overflow:hidden; }
   min-height:clamp(150px,22vw,210px);
 }
 .step .num{ color:var(--brick); }
+.step__ic{ width:clamp(30px,6vw,44px); height:auto; margin-bottom:.15rem; }
 .step h3{
   font-family:var(--serif);
   font-size:clamp(1.25rem,1.1rem + .8vw,1.75rem);
@@ -507,7 +519,8 @@ body.menu-open{ overflow:hidden; }
   .segs{ grid-template-columns:repeat(2,1fr); }
   .contato__links{ flex-direction:row; }
   .btn{ flex:1; }
-  .sobre__body{ grid-template-columns:1fr 1fr; align-items:start; }
+  .sobre__body{ grid-template-columns:1fr auto 1fr; align-items:center; }
+  .sobre__art{ width:min(100%, 300px); margin:0; }
 }
 
 @media (min-width:960px){
@@ -528,8 +541,8 @@ body.menu-open{ overflow:hidden; }
   .segs{ grid-template-columns:repeat(4,1fr); }
 
   .serv__item{
-    grid-template-columns:auto 1fr 1fr;
-    grid-template-areas:"num title desc";
+    grid-template-columns:auto auto 1fr 1fr;
+    grid-template-areas:"num ic title desc";
     align-items:center;
   }
   .serv__num{ padding-top:0; }
@@ -549,3 +562,21 @@ body.menu-open{ overflow:hidden; }
   .reveal{ opacity:1; transform:none; }
   .marquee__track{ animation:none; }
 }
+
+/* ==========================  REELS  ======================== */
+
+.reels{
+  margin-top:clamp(1.1rem,3vw,1.75rem);
+  display:grid; gap:clamp(.6rem,1.6vw,1rem);
+  grid-template-columns:repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+}
+.reel{
+  margin:0; overflow:hidden;
+  border-radius:var(--radius);
+  background:var(--cream);
+}
+.reel video{
+  width:100%; aspect-ratio:9/16; object-fit:cover; display:block;
+  background:var(--cream);
+}
+.reels__note{ margin:.75rem 0 0; }

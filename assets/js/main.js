@@ -164,6 +164,161 @@
     }, { passive: true });
   }
 
+  /* --- Preloader: carrega as imagens antes de entrar ----- */
+  var pre     = document.getElementById('preloader');
+  var preFill = document.getElementById('preloaderFill');
+  var prePct  = document.getElementById('preloaderPct');
+
+  function iniciarPreloader() {
+    if (!pre || reduced) { if (pre) pre.remove(); return; }
+
+    document.body.classList.add('is-loading');
+
+    // Reúne tudo que precisa estar pronto antes de mostrar o site
+    var fontes = [].slice.call(document.images)
+      .map(function (img) { return img.currentSrc || img.src; })
+      .filter(Boolean);
+    // Inclui os posters dos reels, que são lazy
+    [].slice.call(document.querySelectorAll('.reel video[poster]'))
+      .forEach(function (v) { fontes.push(v.poster); });
+
+    fontes = fontes.filter(function (u, i, a) { return a.indexOf(u) === i; });
+
+    var total = fontes.length || 1;
+    var prontas = 0;
+    var inicio = Date.now();
+
+    function passo() {
+      prontas++;
+      var pct = Math.round((prontas / total) * 100);
+      if (preFill) preFill.style.width = pct + '%';
+      if (prePct)  prePct.textContent = pct + '%';
+      if (prontas >= total) encerrar();
+    }
+
+    function encerrar() {
+      // Segura um instante para o preloader não piscar
+      var restante = Math.max(0, 700 - (Date.now() - inicio));
+      setTimeout(function () {
+        pre.classList.add('is-done');
+        document.body.classList.remove('is-loading');
+        setTimeout(function () { if (pre.parentNode) pre.remove(); }, 800);
+      }, restante);
+    }
+
+    fontes.forEach(function (src) {
+      var im = new Image();
+      im.onload = im.onerror = passo;
+      im.src = src;
+    });
+
+    // Rede ruim não pode prender ninguém na porta
+    setTimeout(encerrar, 6000);
+  }
+
+  iniciarPreloader();
+
+  /* --- Scroll suave por interpolação (desktop, mouse) ---- */
+  function iniciarScrollSuave() {
+    if (reduced) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return; // toque já tem inércia nativa
+
+    var alvo = window.scrollY, pos = window.scrollY, rodando = false;
+
+    function teto() {
+      return document.documentElement.scrollHeight - window.innerHeight;
+    }
+
+    function quadro() {
+      pos += (alvo - pos) * 0.11;
+      if (Math.abs(alvo - pos) < 0.5) {
+        pos = alvo; rodando = false;
+        window.scrollTo(0, pos);
+        return;
+      }
+      window.scrollTo(0, pos);
+      requestAnimationFrame(quadro);
+    }
+
+    window.addEventListener('wheel', function (e) {
+      if (e.ctrlKey) return;                                  // não atrapalha o zoom
+      if (document.body.classList.contains('lightbox-open')) return;
+      if (document.body.classList.contains('menu-open')) return;
+      e.preventDefault();
+      var d = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1);
+      alvo = Math.max(0, Math.min(teto(), alvo + d));
+      if (!rodando) { rodando = true; requestAnimationFrame(quadro); }
+    }, { passive: false });
+
+    // Se a página rolar por outro caminho (teclado, barra, âncora), realinha
+    window.addEventListener('scroll', function () {
+      if (!rodando) { alvo = pos = window.scrollY; }
+    }, { passive: true });
+
+    window.addEventListener('resize', function () {
+      alvo = Math.min(alvo, teto());
+    }, { passive: true });
+  }
+
+  iniciarScrollSuave();
+
+  /* --- Cursor: pontinho + círculo que persegue ----------- */
+  function iniciarCursor() {
+    if (reduced) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
+    var dot  = document.createElement('div');
+    var ring = document.createElement('div');
+    dot.className  = 'cursor-dot';
+    ring.className = 'cursor-ring';
+    document.body.appendChild(dot);
+    document.body.appendChild(ring);
+    document.body.classList.add('cursor-ativo');
+
+    var mx = window.innerWidth / 2, my = window.innerHeight / 2;
+    var rx = mx, ry = my;
+
+    document.addEventListener('mousemove', function (e) {
+      mx = e.clientX; my = e.clientY;
+      dot.style.transform = 'translate(' + mx + 'px,' + my + 'px)';
+    }, { passive: true });
+
+    // O círculo chega depois, com inércia
+    (function quadro() {
+      rx += (mx - rx) * 0.16;
+      ry += (my - ry) * 0.16;
+      ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px)';
+      requestAnimationFrame(quadro);
+    })();
+
+    // Sai da tela, some
+    document.addEventListener('mouseleave', function () {
+      document.body.classList.remove('cursor-ativo');
+    });
+    document.addEventListener('mouseenter', function () {
+      document.body.classList.add('cursor-ativo');
+    });
+
+    // Estado conforme o que está sob o cursor
+    var clicaveis = 'a, button, [role="button"], .serv__item';
+    var escuros   = '.contato, .foot, .marquee, .menu, .lightbox';
+
+    document.addEventListener('mouseover', function (e) {
+      var alvo = e.target;
+      var zoom  = alvo.closest('[data-galeria] figure');
+      var click = alvo.closest(clicaveis);
+      var dark  = alvo.closest(escuros);
+
+      ring.classList.toggle('is-zoom', !!zoom);
+      dot.classList.toggle('is-zoom', !!zoom);
+      ring.classList.toggle('is-hover', !!click && !zoom);
+      ring.classList.toggle('em-escuro', !!dark && !zoom);
+      dot.classList.toggle('em-escuro', !!dark && !zoom);
+    }, { passive: true });
+  }
+
+  iniciarCursor();
+
   /* --- Ano em algarismos romanos no rodapé --------------- */
   var roman = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],
                [50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];

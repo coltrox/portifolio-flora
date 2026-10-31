@@ -10,8 +10,8 @@
   --brick:     #AD2831;   /* Brown Red      — superfícies    */
   --pink:      #FD9BB7;   /* Cotton Candy   — destaques      */
   --cream:     #F3E6BD;   /* Pearl Beige                     */
-  --paper:     #FDFAF3;   /* off-white      — fundo da página*/
-  --surface:   #F3E6BD;   /* Pearl Beige    — cartões        */
+  --paper:     #FAF4E6;   /* off-white quente — fundo        */
+  --surface:   #F5ECD5;   /* Pearl Beige suave — cartões     */
   --mustard:   #D8973C;   /* Golden Apricot — acento         */
   --ink:       #2E0A0E;   /* texto corrido                   */
   --muted:     #6E5048;   /* texto secundário                */
@@ -646,4 +646,138 @@ body.lightbox-open{ overflow:hidden; }
   .lightbox__nav--prev{ left:1.5rem; }
   .lightbox__nav--next{ right:1.5rem; }
   .lightbox__frame img{ max-height:calc(100svh - 11rem); }
+}
+
+/* ========================  PRELOADER  ====================== */
+
+.preloader{
+  position:fixed; inset:0; z-index:300;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:1.75rem;
+  background:var(--paper);
+  transition:opacity .7s cubic-bezier(.16,1,.3,1), visibility .7s;
+}
+.preloader.is-done{ opacity:0; visibility:hidden; }
+
+.preloader__stage{ position:relative; display:grid; place-items:center; }
+
+.preloader__mark{
+  width:clamp(150px,30vw,230px); height:auto;
+  animation:flutuar 2.8s ease-in-out infinite;
+}
+@keyframes flutuar{
+  0%,100%{ transform:translateY(0) scale(1); }
+  50%    { transform:translateY(-10px) scale(1.025); }
+}
+
+/* Sparkles da marca girando em volta */
+.preloader__spark{
+  position:absolute;
+  width:16px; height:16px;
+  animation:cintilar 1.9s ease-in-out infinite;
+}
+.preloader__spark--a{ top:4%;   left:6%;   background:var(--pink);    animation-delay:0s; }
+.preloader__spark--b{ top:16%;  right:2%;  background:var(--mustard); animation-delay:.45s; width:12px; height:12px; }
+.preloader__spark--c{ bottom:14%; left:0;   background:var(--brick);   animation-delay:.9s;  width:11px; height:11px; }
+
+@keyframes cintilar{
+  0%,100%{ transform:scale(.45) rotate(0deg);   opacity:.25; }
+  50%    { transform:scale(1.15) rotate(90deg); opacity:1; }
+}
+
+.preloader__bar{
+  width:min(240px, 54vw); height:2px;
+  background:color-mix(in srgb, var(--wine) 16%, transparent);
+  border-radius:2px; overflow:hidden;
+}
+.preloader__fill{
+  display:block; height:100%; width:0%;
+  background:var(--wine);
+  transition:width .35s cubic-bezier(.16,1,.3,1);
+}
+.preloader__pct{ margin:0; color:var(--wine); }
+
+/* Enquanto carrega, o corpo não rola */
+body.is-loading{ overflow:hidden; }
+
+/* =================  ANIMAÇÕES MAIS SUAVES  ================= */
+
+.reveal{
+  transition:opacity 1.05s cubic-bezier(.16,1,.3,1),
+             transform 1.05s cubic-bezier(.16,1,.3,1);
+  transform:translateY(34px);
+}
+
+.hero__type span{
+  animation-duration:1.15s;
+  animation-timing-function:cubic-bezier(.16,1,.3,1);
+}
+
+.work__media figure:hover img{ transform:scale(1.035); }
+.work__media img{ transition:transform .85s cubic-bezier(.16,1,.3,1); }
+
+@media (prefers-reduced-motion:reduce){
+  .preloader{ display:none !important; }
+  body.is-loading{ overflow:auto; }
+}
+
+/* ==========================  CURSOR  ======================= */
+
+.cursor-dot,
+.cursor-ring{
+  position:fixed; top:0; left:0; z-index:400;
+  pointer-events:none;
+  border-radius:50%;
+  opacity:0;
+  transition:opacity .3s;
+  will-change:transform;
+}
+.cursor-dot{
+  width:6px; height:6px;
+  background:var(--wine);
+  margin:-3px 0 0 -3px;
+}
+.cursor-ring{
+  width:34px; height:34px;
+  border:1.5px solid color-mix(in srgb, var(--wine) 55%, transparent);
+  margin:-17px 0 0 -17px;
+  transition:opacity .3s, width .3s cubic-bezier(.16,1,.3,1),
+             height .3s cubic-bezier(.16,1,.3,1),
+             margin .3s cubic-bezier(.16,1,.3,1),
+             background .3s, border-color .3s;
+}
+.cursor-ativo .cursor-dot,
+.cursor-ativo .cursor-ring{ opacity:1; }
+
+/* Cresce sobre o que é clicável */
+.cursor-ring.is-hover{
+  width:58px; height:58px; margin:-29px 0 0 -29px;
+  background:color-mix(in srgb, var(--wine) 10%, transparent);
+  border-color:color-mix(in srgb, var(--wine) 75%, transparent);
+}
+/* Sobre a imagem, vira "ampliar" */
+.cursor-ring.is-zoom{
+  width:74px; height:74px; margin:-37px 0 0 -37px;
+  background:color-mix(in srgb, var(--wine) 88%, transparent);
+  border-color:transparent;
+}
+.cursor-dot.is-zoom{ opacity:0; }
+
+/* Em cima do vinho, o cursor inverte para o creme */
+.cursor-ring.em-escuro{ border-color:color-mix(in srgb, var(--cream) 70%, transparent); }
+.cursor-dot.em-escuro{ background:var(--cream); }
+
+/* Só em telas com mouse de verdade */
+@media (pointer:fine){
+  body.cursor-ativo,
+  body.cursor-ativo a,
+  body.cursor-ativo button,
+  body.cursor-ativo [role="button"]{ cursor:none; }
+}
+@media (pointer:coarse){
+  .cursor-dot, .cursor-ring{ display:none !important; }
+}
+@media (prefers-reduced-motion:reduce){
+  .cursor-dot, .cursor-ring{ display:none !important; }
+  body.cursor-ativo, body.cursor-ativo a, body.cursor-ativo button{ cursor:auto; }
 }

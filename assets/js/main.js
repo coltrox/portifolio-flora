@@ -25,6 +25,7 @@
     requestAnimationFrame(function () { menu.classList.add('is-open'); });
     toggle.setAttribute('aria-expanded', 'true');
     document.body.classList.add('menu-open');
+    if (window.__lenis) window.__lenis.stop();
     var first = menu.querySelector('a');
     if (first) first.focus();
   }
@@ -33,6 +34,7 @@
     menu.classList.remove('is-open');
     toggle.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('menu-open');
+    if (window.__lenis) window.__lenis.start();
     var hide = function () { menu.hidden = true; };
     if (reduced) hide(); else setTimeout(hide, 350);
     if (lastFocus) lastFocus.focus();
@@ -89,48 +91,94 @@
     reels.forEach(function (v) { rio.observe(v); });
   }
 
-  /* --- Lightbox: clique na imagem para ampliar ----------- */
-  var lb      = document.getElementById('lightbox');
-  var lbImg   = document.getElementById('lightboxImg');
-  var lbCap   = document.getElementById('lightboxCap');
-  var figuras = [].slice.call(document.querySelectorAll('[data-galeria] figure'));
-  var atual   = 0;
+  /* --- Carrossel: setas e encaixe ------------------------ */
+  [].slice.call(document.querySelectorAll('.carrossel')).forEach(function (car) {
+    var trilho = car.querySelector('.carrossel__trilho');
+    var setas  = [].slice.call(car.querySelectorAll('.carrossel__seta'));
+    if (!trilho || !setas.length) return;
+
+    function passo() {
+      var item = trilho.querySelector('figure');
+      if (!item) return trilho.clientWidth * 0.8;
+      var estilo = getComputedStyle(trilho);
+      return item.getBoundingClientRect().width + parseFloat(estilo.columnGap || estilo.gap || 0);
+    }
+
+    function atualizar() {
+      var max = trilho.scrollWidth - trilho.clientWidth;
+      setas[0].disabled = trilho.scrollLeft <= 2;
+      setas[1].disabled = trilho.scrollLeft >= max - 2;
+      // Sem transbordo, as setas não servem para nada
+      car.classList.toggle('sem-setas', max <= 2);
+    }
+
+    setas.forEach(function (b) {
+      b.addEventListener('click', function () {
+        trilho.scrollBy({ left: passo() * Number(b.dataset.dir), behavior: 'smooth' });
+      });
+    });
+
+    trilho.addEventListener('scroll', atualizar, { passive: true });
+    window.addEventListener('resize', atualizar, { passive: true });
+    atualizar();
+  });
+
+  /* --- Lightbox: abre no carrossel de origem -------------- */
+  var lb       = document.getElementById('lightbox');
+  var lbImg    = document.getElementById('lightboxImg');
+  var lbCap    = document.getElementById('lightboxCap');
+  var lbConta  = document.getElementById('lightboxContador');
+  var grupo    = [];
+  var atual    = 0;
   var voltarPara = null;
 
-  // Cada figura vira alvo de clique e de teclado
-  figuras.forEach(function (fig, i) {
+  function travarFundo(travar) {
+    document.body.classList.toggle('lightbox-open', travar);
+    if (window.__lenis) { travar ? window.__lenis.stop() : window.__lenis.start(); }
+  }
+
+  // Só figuras com imagem entram no lightbox (os reels tocam no lugar)
+  [].slice.call(document.querySelectorAll('[data-galeria] figure')).forEach(function (fig) {
+    var img = fig.querySelector('img');
+    if (!img) return;
     fig.setAttribute('role', 'button');
     fig.setAttribute('tabindex', '0');
-    var img = fig.querySelector('img');
-    fig.setAttribute('aria-label', 'Ampliar imagem: ' + (img ? img.alt : ''));
-    fig.addEventListener('click', function () { abrir(i); });
+    fig.setAttribute('aria-label', 'Ampliar imagem: ' + img.alt);
+    fig.addEventListener('click', function () { abrir(fig); });
     fig.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(i); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(fig); }
     });
   });
 
   function mostrar(i) {
-    atual = (i + figuras.length) % figuras.length;
-    var img = figuras[atual].querySelector('img');
-    if (!img) return;
+    if (!grupo.length) return;
+    atual = (i + grupo.length) % grupo.length;
+    var img = grupo[atual].querySelector('img');
     lbImg.src = img.currentSrc || img.src;
     lbImg.alt = img.alt || '';
     lbCap.textContent = img.alt || '';
+    if (lbConta) lbConta.textContent = (atual + 1) + ' / ' + grupo.length;
+    // Mantém o carrossel acompanhando o que está aberto
+    grupo[atual].scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }
 
-  function abrir(i) {
+  function abrir(fig) {
     if (!lb) return;
-    voltarPara = figuras[i];
-    mostrar(i);
+    var caixa = fig.closest('[data-galeria]');
+    grupo = [].slice.call(caixa.querySelectorAll('figure')).filter(function (f) {
+      return f.querySelector('img');
+    });
+    voltarPara = fig;
+    mostrar(grupo.indexOf(fig));
     lb.hidden = false;
     requestAnimationFrame(function () { lb.classList.add('is-open'); });
-    document.body.classList.add('lightbox-open');
+    travarFundo(true);
     lb.querySelector('.lightbox__close').focus();
   }
 
   function fechar() {
     lb.classList.remove('is-open');
-    document.body.classList.remove('lightbox-open');
+    travarFundo(false);
     var esconder = function () { lb.hidden = true; lbImg.src = ''; };
     if (reduced) esconder(); else setTimeout(esconder, 250);
     if (voltarPara) voltarPara.focus();
@@ -141,7 +189,6 @@
     lb.querySelector('.lightbox__nav--prev').addEventListener('click', function () { mostrar(atual - 1); });
     lb.querySelector('.lightbox__nav--next').addEventListener('click', function () { mostrar(atual + 1); });
 
-    // Clicar no fundo fecha; clicar na imagem, não
     lb.addEventListener('click', function (e) {
       if (e.target === lb || e.target.classList.contains('lightbox__frame')) fechar();
     });
@@ -153,7 +200,6 @@
       if (e.key === 'ArrowRight') mostrar(atual + 1);
     });
 
-    // Arrastar para o lado no celular
     var x0 = null;
     lb.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
     lb.addEventListener('touchend', function (e) {
@@ -222,6 +268,10 @@
   function iniciarLenis() {
     if (reduced) return; // Respeita quem prefere sem animação nas configurações do PC
 
+    // Se a CDN nao carregar (offline, adblock, fora do ar), segue com o
+    // scroll nativo em vez de derrubar todo o resto do script.
+    if (typeof Lenis !== 'function') return;
+
     // Inicializa a biblioteca Lenis
     const lenis = new Lenis({
       duration: 1.2, // Tempo da suavidade (quanto maior, mais "lento/suave")
@@ -230,6 +280,8 @@
     });
 
     // Faz o Lenis rodar sincronizado com a taxa de atualização do monitor
+    window.__lenis = lenis;
+
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -251,7 +303,7 @@
   // Como o script do Lenis carrega externo, esperamos ele estar disponível
   window.addEventListener('DOMContentLoaded', function() {
     if (typeof Lenis !== 'undefined') {
-      iniciarLenis();
+      try { iniciarLenis(); } catch (e) { /* scroll nativo continua valendo */ }
     }
   });
 

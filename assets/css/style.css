@@ -782,3 +782,78 @@ body.is-loading{ overflow:hidden; }
   .cursor-dot, .cursor-ring{ display:none !important; }
   body.cursor-ativo, body.cursor-ativo a, body.cursor-ativo button{ cursor:auto; }
 }
+
+/* =========================  CARROSSEL  ===================== */
+
+.carrossel{ margin-top:clamp(1.1rem,3vw,1.75rem); }
+.carrossel + .carrossel{ margin-top:clamp(1.75rem,4vw,2.75rem); }
+
+.carrossel__topo{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:1rem; margin-bottom:.85rem;
+}
+.carrossel__tipo{ margin:0; color:var(--muted); }
+
+.carrossel__setas{ display:flex; gap:.4rem; flex:none; }
+.carrossel__seta{
+  width:36px; height:36px;
+  display:grid; place-items:center;
+  background:none; cursor:pointer;
+  border:1px solid var(--rule);
+  border-radius:50%;
+  color:var(--wine);
+  font-size:1.45rem; line-height:1;
+  padding-bottom:3px;
+  transition:background .25s, border-color .25s, opacity .25s, transform .25s;
+}
+.carrossel__seta:hover:not(:disabled){
+  background:var(--wine); border-color:var(--wine); color:var(--paper);
+  transform:scale(1.06);
+}
+.carrossel__seta:disabled{ opacity:.3; cursor:default; }
+
+/* Trilho com encaixe — arrasta no celular, setas no desktop */
+.carrossel__trilho{
+  display:flex; gap:clamp(.6rem,1.6vw,1rem);
+  align-items:flex-start;   /* cada peça na sua altura, sem esticar */
+  overflow-x:auto; overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  padding-bottom:.35rem;
+  scrollbar-width:none;
+}
+.carrossel__trilho::-webkit-scrollbar{ display:none; }
+
+.carrossel__trilho > figure{
+  margin:0; flex:0 0 auto;
+  width:clamp(205px, 30vw, 310px);
+  scroll-snap-align:start;
+  overflow:hidden;
+  border-radius:var(--radius);
+  background:var(--cream);
+  cursor:zoom-in;
+}
+.carrossel__trilho > figure:focus-visible{ outline:2px solid var(--wine); outline-offset:3px; }
+
+.carrossel__trilho img{
+  width:100%; height:auto; display:block;
+  transition:transform .85s cubic-bezier(.16,1,.3,1);
+}
+.carrossel__trilho > figure:hover img{ transform:scale(1.035); }
+
+/* Carrossel de reels: formato vertical de story */
+.carrossel--reels .carrossel__trilho > figure{ width:clamp(165px, 22vw, 235px); cursor:default; }
+.carrossel--reels video{
+  width:100%; aspect-ratio:9/16; object-fit:cover; display:block;
+  background:var(--cream);
+}
+
+/* Contador do lightbox */
+.lightbox__contador{
+  font-family:var(--mono); font-size:.7rem; letter-spacing:.14em;
+  color:color-mix(in srgb, var(--cream) 65%, transparent);
+  margin:0;
+}
+
+/* Sem transbordo não há o que navegar */
+.carrossel.sem-setas .carrossel__setas{ display:none; }

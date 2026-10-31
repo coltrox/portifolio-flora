@@ -82,15 +82,16 @@ ol,ul{ margin:0; padding:0; list-style:none; }
 }
 .label .num{ color:var(--wine); }
 
-/* Sparkle ✦ — motivo da identidade (logo, bio, posts) */
+/* Sparkle — motivo da identidade (logo, bio, posts).
+   Desenhado em CSS: o caractere ✦ não existe em todas as fontes. */
 .spark{
-  color:var(--pink);
-  font-size:1.05em;
-  line-height:1;
   display:inline-block;
-  transform:translateY(-.04em);
+  width:1.3em; height:1.3em;
+  background:var(--pink);
+  vertical-align:middle;
+  flex:none;
+  clip-path:polygon(50% 0%, 53% 47%, 100% 50%, 53% 53%, 50% 100%, 47% 53%, 0% 50%, 47% 47%);
 }
-.contato .spark{ color:var(--pink); }
 
 /* ===========================  NAV  ========================= */
 
@@ -263,6 +264,7 @@ body.menu-open{ overflow:hidden; }
   white-space:nowrap;
 }
 .marquee__track b{ color:var(--pink); font-weight:400; }
+.marquee__track .spark{ width:.75em; height:.75em; margin:0 .18em; }
 
 @keyframes slide{ to{ transform:translateX(-50%) } }
 
@@ -282,6 +284,8 @@ body.menu-open{ overflow:hidden; }
   text-transform:none;
   font-size:.72em;
   letter-spacing:-.01em;
+  display:inline-block;
+  margin-bottom:.12em;
 }
 
 .sobre__body{ display:grid; gap:clamp(2rem,5vw,3.5rem); }

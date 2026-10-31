@@ -218,54 +218,42 @@
 
   iniciarPreloader();
 
-  /* --- Scroll suave por interpolação (desktop, mouse) ---- */
-  function iniciarScrollSuave() {
-    if (reduced) return;
-    if (!window.matchMedia('(pointer: fine)').matches) return; // toque já tem inércia nativa
+  /* --- Scroll Suave Nativo (Lenis) ----------------------- */
+  function iniciarLenis() {
+    if (reduced) return; // Respeita quem prefere sem animação nas configurações do PC
 
-    var alvo = window.scrollY, pos = window.scrollY, rodando = false;
+    // Inicializa a biblioteca Lenis
+    const lenis = new Lenis({
+      duration: 1.2, // Tempo da suavidade (quanto maior, mais "lento/suave")
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Curva de aceleração natural
+      smoothWheel: true, // Aplica suavidade na rodinha do mouse
+    });
 
-    function teto() {
-      return document.documentElement.scrollHeight - window.innerHeight;
+    // Faz o Lenis rodar sincronizado com a taxa de atualização do monitor
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
     }
+    requestAnimationFrame(raf);
 
-    function quadro() {
-      pos += (alvo - pos) * 0.06; 
-      if (Math.abs(alvo - pos) < 0.5) {
-        pos = alvo; rodando = false;
-        window.scrollTo(0, pos);
-        return;
-      }
-      window.scrollTo(0, pos);
-      requestAnimationFrame(quadro);
-    }
-
-    window.addEventListener('wheel', function (e) {
-      if (e.ctrlKey) return; // não atrapalha o zoom
-      if (document.body.classList.contains('lightbox-open')) return;
-      if (document.body.classList.contains('menu-open')) return;
-      
-      e.preventDefault();
-      
-      var multiplicador = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? window.innerHeight : 2.5;
-      var d = e.deltaY * multiplicador;
-      
-      alvo = Math.max(0, Math.min(teto(), alvo + d));
-      
-      if (!rodando) { rodando = true; requestAnimationFrame(quadro); }
-    }, { passive: false });
-
-    // Se a página rolar por outro caminho (teclado, barra, âncora), realinha
-    window.addEventListener('scroll', function () {
-      if (!rodando) { alvo = pos = window.scrollY; }
-    }, { passive: true });
-
-    window.addEventListener('resize', function () {
-      alvo = Math.min(alvo, teto());
-    }, { passive: true });
+    // Conecta as âncoras (links do menu) para usarem o scroll suave do Lenis
+    document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        var target = this.getAttribute('href');
+        if (target && target !== '#') {
+          lenis.scrollTo(target);
+        }
+      });
+    });
   }
 
-  iniciarScrollSuave();
+  // Como o script do Lenis carrega externo, esperamos ele estar disponível
+  window.addEventListener('DOMContentLoaded', function() {
+    if (typeof Lenis !== 'undefined') {
+      iniciarLenis();
+    }
+  });
 
   /* --- Cursor: pontinho + círculo que persegue ----------- */
   function iniciarCursor() {

@@ -230,7 +230,7 @@
     }
 
     function quadro() {
-      pos += (alvo - pos) * 0.11;
+      pos += (alvo - pos) * 0.06; 
       if (Math.abs(alvo - pos) < 0.5) {
         pos = alvo; rodando = false;
         window.scrollTo(0, pos);
@@ -241,12 +241,17 @@
     }
 
     window.addEventListener('wheel', function (e) {
-      if (e.ctrlKey) return;                                  // não atrapalha o zoom
+      if (e.ctrlKey) return; // não atrapalha o zoom
       if (document.body.classList.contains('lightbox-open')) return;
       if (document.body.classList.contains('menu-open')) return;
+      
       e.preventDefault();
-      var d = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1);
+      
+      var multiplicador = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? window.innerHeight : 2.5;
+      var d = e.deltaY * multiplicador;
+      
       alvo = Math.max(0, Math.min(teto(), alvo + d));
+      
       if (!rodando) { rodando = true; requestAnimationFrame(quadro); }
     }, { passive: false });
 

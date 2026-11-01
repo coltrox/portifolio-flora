@@ -373,7 +373,7 @@
     }, '');
   }
   var year = toRoman(new Date().getFullYear());
-  document.querySelectorAll('.hero__meta span:last-child, .foot .mono:last-child')
+  document.querySelectorAll('.js-ano')
     .forEach(function (el) { el.textContent = year; });
 
 })();

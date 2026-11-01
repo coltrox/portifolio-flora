@@ -901,3 +901,13 @@ body.is-loading{ overflow:hidden; }
 /* Carregando */
 .reel.carregando .reel__play span{ animation:pulsa 1s ease-in-out infinite; }
 @keyframes pulsa{ 50%{ transform:scale(.88); opacity:.6; } }
+
+/* Autoria do rodapé */
+.foot__autoria{
+  flex-basis:100%;
+  padding-top:1rem;
+  margin-top:.5rem;
+  border-top:1px solid color-mix(in srgb, var(--cream) 16%, transparent);
+  color:color-mix(in srgb, var(--cream) 55%, transparent) !important;
+}
+.foot__autoria strong{ color:var(--pink); font-weight:500; letter-spacing:.1em; }

@@ -73,54 +73,53 @@
     });
   }
 
-  /* --- Reels: carrega e toca só quando aparecem ---------- */
-  var reels = document.querySelectorAll('.reel video');
+  /* --- Reels: tocam só quando a pessoa clica -------------- */
+  var reels = [].slice.call(document.querySelectorAll('.reel'));
 
-  if (reels.length && 'IntersectionObserver' in window) {
-    var rio = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        var v = entry.target;
-        if (entry.isIntersecting) {
-          if (!v.src && v.dataset.src) v.src = v.dataset.src;
-          if (!reduced) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
-        } else if (!v.paused) {
-          v.pause();
-        }
-      });
-    }, { threshold: 0.35 });
-    reels.forEach(function (v) { rio.observe(v); });
+  function pausarTodos(exceto) {
+    reels.forEach(function (fig) {
+      var v = fig.querySelector('video');
+      if (v && v !== exceto && !v.paused) { v.pause(); fig.classList.remove('tocando'); }
+    });
   }
 
-  /* --- Carrossel: setas e encaixe ------------------------ */
-  [].slice.call(document.querySelectorAll('.carrossel')).forEach(function (car) {
-    var trilho = car.querySelector('.carrossel__trilho');
-    var setas  = [].slice.call(car.querySelectorAll('.carrossel__seta'));
-    if (!trilho || !setas.length) return;
+  reels.forEach(function (fig) {
+    var v = fig.querySelector('video');
+    var b = fig.querySelector('.reel__play');
+    if (!v || !b) return;
 
-    function passo() {
-      var item = trilho.querySelector('figure');
-      if (!item) return trilho.clientWidth * 0.8;
-      var estilo = getComputedStyle(trilho);
-      return item.getBoundingClientRect().width + parseFloat(estilo.columnGap || estilo.gap || 0);
+    function alterna() {
+      if (v.paused) {
+        pausarTodos(v);
+        if (!v.src && v.dataset.src) {
+          fig.classList.add('carregando');
+          v.src = v.dataset.src;
+        }
+        var pr = v.play();
+        if (pr && pr.catch) pr.catch(function () { fig.classList.remove('tocando', 'carregando'); });
+      } else {
+        v.pause();
+      }
     }
 
-    function atualizar() {
-      var max = trilho.scrollWidth - trilho.clientWidth;
-      setas[0].disabled = trilho.scrollLeft <= 2;
-      setas[1].disabled = trilho.scrollLeft >= max - 2;
-      // Sem transbordo, as setas não servem para nada
-      car.classList.toggle('sem-setas', max <= 2);
-    }
+    b.addEventListener('click', alterna);
 
-    setas.forEach(function (b) {
-      b.addEventListener('click', function () {
-        trilho.scrollBy({ left: passo() * Number(b.dataset.dir), behavior: 'smooth' });
-      });
+    v.addEventListener('playing', function () {
+      fig.classList.remove('carregando');
+      fig.classList.add('tocando');
+      b.setAttribute('aria-label', 'Pausar vídeo');
+    });
+    v.addEventListener('pause', function () {
+      fig.classList.remove('tocando');
+      b.setAttribute('aria-label', 'Reproduzir vídeo');
     });
 
-    trilho.addEventListener('scroll', atualizar, { passive: true });
-    window.addEventListener('resize', atualizar, { passive: true });
-    atualizar();
+    // Saiu da tela enquanto tocava: pausa para não gastar dados à toa
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (!e.isIntersecting && !v.paused) v.pause(); });
+      }, { threshold: 0.1 }).observe(fig);
+    }
   });
 
   /* --- Lightbox: abre no carrossel de origem -------------- */

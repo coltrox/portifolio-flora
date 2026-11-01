@@ -40,9 +40,12 @@ Tipografia (Google Fonts): **Anton** (títulos), **Instrument Serif** (itálicos
 
 Tudo está no `index.html`, em português e com comentários por seção.
 
-- **Trabalhos** — cada projeto é um bloco `<article class="work">`. Para trocar
-  as fotos, substitua os arquivos em `assets/img/` mantendo os nomes, ou ajuste
-  o `src`. Sempre atualize o `alt` junto.
+- **Trabalhos** — cada projeto é um bloco `<article class="work">` e pode ter
+  vários carrosséis, um por tipo de conteúdo (posts de produto, datas
+  comemorativas, stories…). As fotos ficam em `assets/img/trabalhos/`.
+  Para adicionar uma, copie um `<figure>` dentro do `.carrossel__trilho`
+  e aponte para o arquivo novo. Sempre escreva o `alt` junto.
+  As setas aparecem sozinhas quando o trilho transborda.
 - **Serviços / Processo** — listas numeradas; é só editar o texto.
 - **Contato** — WhatsApp e Instagram ficam na seção `#contato` e no menu mobile.
 
@@ -77,6 +80,7 @@ Depois abra `http://localhost:8000`.
 ## Acessibilidade e performance
 
 - HTML semântico, com link para pular ao conteúdo e foco visível
-- Imagens com `alt` descritivo e `loading="lazy"`
+- Imagens em WebP com `alt` descritivo e `loading="lazy"`
+- O preloader espera só logos e ícones, nunca a galeria inteira
 - Respeita `prefers-reduced-motion` (desliga marquee e animações)
 - Sem rastreadores; as únicas requisições externas são as fontes do Google

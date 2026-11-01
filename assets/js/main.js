@@ -179,7 +179,7 @@
   function fechar() {
     lb.classList.remove('is-open');
     travarFundo(false);
-    var esconder = function () { lb.hidden = true; lbImg.src = ''; };
+    var esconder = function () { lb.hidden = true; lbImg.removeAttribute('src'); };
     if (reduced) esconder(); else setTimeout(esconder, 250);
     if (voltarPara) voltarPara.focus();
   }
@@ -220,13 +220,13 @@
 
     document.body.classList.add('is-loading');
 
-    // Reúne tudo que precisa estar pronto antes de mostrar o site
+    // Só espera o que aparece de cara. As imagens dos trabalhos sao
+    // lazy e somam varios MB: segura-las aqui prenderia a pessoa na
+    // porta baixando a galeria inteira antes de ver o site.
     var fontes = [].slice.call(document.images)
+      .filter(function (img) { return img.loading !== 'lazy'; })
       .map(function (img) { return img.currentSrc || img.src; })
       .filter(Boolean);
-    // Inclui os posters dos reels, que são lazy
-    [].slice.call(document.querySelectorAll('.reel video[poster]'))
-      .forEach(function (v) { fontes.push(v.poster); });
 
     fontes = fontes.filter(function (u, i, a) { return a.indexOf(u) === i; });
 

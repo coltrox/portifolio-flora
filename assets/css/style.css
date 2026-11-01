@@ -824,7 +824,9 @@ body.is-loading{ overflow:hidden; }
 
 .carrossel__trilho > figure{
   margin:0; flex:0 0 auto;
-  width:clamp(205px, 30vw, 310px);
+  /* Altura fixa, largura pela proporção: o trilho fica alinhado
+     sem recortar nenhuma peça. */
+  height:clamp(290px, 38vh, 420px);
   scroll-snap-align:start;
   overflow:hidden;
   border-radius:var(--radius);
@@ -834,15 +836,15 @@ body.is-loading{ overflow:hidden; }
 .carrossel__trilho > figure:focus-visible{ outline:2px solid var(--wine); outline-offset:3px; }
 
 .carrossel__trilho img{
-  width:100%; height:auto; display:block;
+  height:100%; width:auto; display:block;
   transition:transform .85s cubic-bezier(.16,1,.3,1);
 }
 .carrossel__trilho > figure:hover img{ transform:scale(1.035); }
 
 /* Carrossel de reels: formato vertical de story */
-.carrossel--reels .carrossel__trilho > figure{ width:clamp(165px, 22vw, 235px); cursor:default; }
+.carrossel--reels .carrossel__trilho > figure{ cursor:default; }
 .carrossel--reels video{
-  width:100%; aspect-ratio:9/16; object-fit:cover; display:block;
+  height:100%; width:auto; aspect-ratio:9/16; object-fit:cover; display:block;
   background:var(--cream);
 }
 

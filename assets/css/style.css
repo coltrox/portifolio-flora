@@ -381,9 +381,7 @@ body.menu-open{ overflow:hidden; }
   column-gap:clamp(1rem,4vw,3rem);
   padding:clamp(1.5rem,4vw,2.5rem) 0;
   border-bottom:1px solid var(--rule);
-  transition:padding-left .35s cubic-bezier(.2,.8,.2,1), color .35s;
 }
-.serv__item:hover{ padding-left:clamp(.5rem,1.5vw,1.25rem); }
 .serv__num{ grid-area:num; color:var(--wine); padding-top:.55rem; }
 .serv__ic{
   grid-area:ic; align-self:center;

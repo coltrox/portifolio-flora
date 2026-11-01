@@ -345,7 +345,7 @@
     });
 
     // Estado conforme o que está sob o cursor
-    var clicaveis = 'a, button, [role="button"], .serv__item';
+    var clicaveis = 'a, button, [role="button"]';
     var escuros   = '.contato, .foot, .marquee, .menu, .lightbox';
 
     document.addEventListener('mouseover', function (e) {

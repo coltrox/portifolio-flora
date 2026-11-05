@@ -207,7 +207,7 @@ body.menu-open{ overflow:hidden; }
   display:inline-flex; align-items:center; gap:.35rem;
 }
 .link-arrow span{ transition:transform .3s; }
-.link-arrow:hover span{ transform:translateY(3px); }
+.link-arrow:hover span{ transform:translateX(4px); }
 
 .hero__list{ display:flex; flex-direction:column; gap:.55rem; }
 .hero__list li{
